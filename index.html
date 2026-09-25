@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FreshBox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#EEF3F1; --surface:#FFFFFF; --surface-2:#E3EBE8; --ink:#16241F; --muted:#5A6B65; --line:#CFDBD6;
+  --accent:#1E6B50; --accent-ink:#FFFFFF; --accent-soft:#D6EAE1;
+  --ok:#2E9E5B; --warn:#E08A1E; --bad:#D2452F;
+  --ok-soft:#DDF1E4; --warn-soft:#FBEBD3; --bad-soft:#F8DDD8;
+  --display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Figtree", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F1715; --surface:#17221F; --surface-2:#1F2D29; --ink:#E6EFEB; --muted:#9AADA6; --line:#2C3D38;
+    --accent:#5CC49A; --accent-ink:#0B1A14; --accent-soft:#1D3A2F;
+    --ok:#4CC27B; --warn:#F0A445; --bad:#EE6A55;
+    --ok-soft:#173526; --warn-soft:#3A2A14; --bad-soft:#3D1D18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F1715; --surface:#17221F; --surface-2:#1F2D29; --ink:#E6EFEB; --muted:#9AADA6; --line:#2C3D38;
+  --accent:#5CC49A; --accent-ink:#0B1A14; --accent-soft:#1D3A2F;
+  --ok:#4CC27B; --warn:#F0A445; --bad:#EE6A55;
+  --ok-soft:#173526; --warn-soft:#3A2A14; --bad-soft:#3D1D18;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;align-items:center;gap:12px}
+.logo{width:44px;height:44px;border-radius:12px;background:var(--accent);display:grid;place-items:center;flex:none}
+.logo span{width:12px;height:12px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px var(--accent-soft),0 0 12px var(--ok)}
+h1{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em;margin:0;line-height:1.1}
+.sub{margin:0;color:var(--muted);font-size:14px}
+.boxtag{margin-left:auto;font-family:var(--display);font-weight:600;font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;white-space:nowrap}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:16px}
+h2{font-family:var(--display);font-weight:600;font-size:19px;margin:0;text-wrap:balance}
+label{font-weight:600;font-size:14px;display:block;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted);font-size:13px}
+input[type=text],input[type=date],input[type=email],select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:46px}
+input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface-2);border-radius:12px;padding:4px;gap:4px}
+.seg button{font:inherit;font-size:14px;font-weight:600;border:0;border-radius:9px;padding:9px 8px;background:transparent;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.estimate{font-size:14px;background:var(--accent-soft);border-radius:10px;padding:10px 12px}
+.checks{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:14px;font-weight:500;cursor:pointer;background:var(--bg)}
+.chip input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btn{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:12px;padding:14px 16px;background:var(--accent);color:var(--accent-ink);cursor:pointer;width:100%}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent);font-size:14px;padding:10px 14px;width:auto}
+.err{color:var(--bad);font-size:13px;margin:6px 0 0}
+.led{width:14px;height:14px;border-radius:50%;flex:none}
+.led.ok{background:var(--ok);box-shadow:0 0 10px var(--ok)}
+.led.warn{background:var(--warn);box-shadow:0 0 10px var(--warn)}
+.led.bad{background:var(--bad);box-shadow:0 0 10px var(--bad)}
+.confirm-head{display:flex;align-items:center;gap:12px}
+.confirm-head .led{width:22px;height:22px}
+.sched{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.sched li{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.sched .when{font-weight:600;font-variant-numeric:tabular-nums}
+.sched .msg{color:var(--muted);font-size:14px;flex:1 1 180px}
+.sched a{font-size:13px;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid var(--accent);border-radius:999px;padding:5px 10px;white-space:nowrap}
+.list{display:flex;flex-direction:column;gap:10px}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;border-radius:12px;padding:12px;border:1px solid var(--line)}
+.item.ok{background:var(--ok-soft)} .item.warn{background:var(--warn-soft)} .item.bad{background:var(--bad-soft)}
+.item .name{font-weight:600}
+.item .meta{grid-column:2/4;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.item .days{font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap}
+.item .acts{grid-column:1/-1;display:flex;gap:8px;margin-top:6px}
+.item .acts button{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:2px}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend .led{width:10px;height:10px;box-shadow:none}
+.stats{font-size:14px;color:var(--muted)}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+footer{font-size:12px;color:var(--muted);text-align:center}
+@media (prefers-reduced-motion:no-preference){ .led.pulse{animation:p 2.4s ease-in-out infinite} @keyframes p{50%{opacity:.45}} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="logo" aria-hidden="true"><span></span></div>
+    <div>
+      <h1>FreshBox</h1>
+      <p class="sub">Qu'est-ce qu'il y a dans cette boîte ?</p>
+    </div>
+    <div class="boxtag" id="boxTag">Boîte n°1</div>
+  </header>
+
+  <form class="card" id="form" novalidate>
+    <h2>J'ajoute un aliment</h2>
+
+    <div>
+      <label for="box">Numéro de la boîte <span class="hint">(indiqué sur l'autocollant)</span></label>
+      <select id="box"></select>
+    </div>
+
+    <div>
+      <label for="product">Nom du produit</label>
+      <input type="text" id="product" placeholder="Ex. : reste de curry de lentilles" autocomplete="off" required>
+      <p class="err" id="errProduct" hidden>Indique ce que contient la boîte.</p>
+    </div>
+
+    <div>
+      <label id="modeLabel">Date de péremption</label>
+      <div class="seg" role="group" aria-labelledby="modeLabel">
+        <button type="button" id="modeDate" aria-pressed="true">Je connais la date</button>
+        <button type="button" id="modeCat" aria-pressed="false">Pas de date</button>
+      </div>
+    </div>
+
+    <div id="dateBlock">
+      <label for="date">Date limite (DLC)</label>
+      <input type="date" id="date">
+      <p class="err" id="errDate" hidden>Choisis une date.</p>
+    </div>
+
+    <div id="catBlock" hidden>
+      <label for="cat">Type d'aliment</label>
+      <select id="cat"></select>
+      <p class="estimate" id="estimate"></p>
+    </div>
+
+    <div>
+      <label for="contact">E-mail ou numéro de téléphone</label>
+      <input type="text" id="contact" placeholder="prenom@mail.fr ou 06 12 34 56 78" autocomplete="email">
+      <p class="err" id="errContact" hidden>Indique un e-mail ou un numéro de téléphone valide.</p>
+    </div>
+
+    <div>
+      <label id="remLabel">Me prévenir</label>
+      <div class="checks" role="group" aria-labelledby="remLabel">
+        <label class="chip"><input type="checkbox" id="r2" checked> 2 jours avant</label>
+        <label class="chip"><input type="checkbox" id="r1"> la veille</label>
+        <label class="chip"><input type="checkbox" id="r0" checked> le jour J</label>
+      </div>
+    </div>
+
+    <button class="btn" type="submit">Programmer mes rappels</button>
+  </form>
+
+  <section class="card" id="confirm" hidden aria-live="polite">
+    <div class="confirm-head">
+      <span class="led pulse" id="cLed"></span>
+      <div>
+        <h2 id="cTitle"></h2>
+        <p class="sub" id="cSub"></p>
+      </div>
+    </div>
+    <ul class="sched" id="cSched"></ul>
+    <p class="stats">Ajoute chaque rappel à ton agenda pour recevoir la notification sur ton téléphone.</p>
+    <div class="row">
+      <button class="btn ghost" type="button" id="again">Ajouter un autre aliment</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <h2>Mon frigo</h2>
+      <span class="stats" id="stats"></span>
+    </div>
+    <div class="legend">
+      <span><i class="led ok"></i>À consommer plus tard</span>
+      <span><i class="led warn"></i>Bientôt (≤ 2 j)</span>
+      <span><i class="led bad"></i>Rapidement (aujourd'hui ou dépassé)</span>
+    </div>
+    <div class="list" id="list"></div>
+  </section>
+
+  <footer>FreshBox · prototype MVP · les durées estimées sont indicatives, fie-toi aussi à l'odeur et à l'aspect.</footer>
+</div>
+
+<script>
+(function(){
+  // ===== RÉGLAGE =====
+  // Colle ici l'adresse du webhook Make (ou Zapier) pour recevoir chaque saisie
+  // dans Google Sheets et programmer les e-mails. Laisse vide pour ne rien envoyer.
+  const WEBHOOK_URL = "";
+  // ===================
+  // Durées moyennes de conservation au réfrigérateur (après ouverture ou cuisson), en jours
+  const CATS = [
+    ["restes","Restes cuisinés (plat maison)",3],
+    ["viande-crue","Viande ou poisson cru",2],
+    ["viande-cuite","Viande ou poisson cuit",3],
+    ["legumes-coupes","Légumes crus coupés",4],
+    ["fruits-coupes","Fruits coupés",3],
+    ["sauce","Sauce, soupe maison",4],
+    ["laitier","Lait, crème entamés",4],
+    ["yaourt","Yaourt, fromage frais",7],
+    ["fromage-dur","Fromage à pâte dure entamé",21],
+    ["oeufs-durs","Œufs durs",7],
+    ["jambon","Charcuterie entamée",4]
+  ];
+  const $ = id => document.getElementById(id);
+  const DAY = 86400000;
+  const today = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+  const iso = d => d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  const parse = s => { const [y,m,d] = s.split("-").map(Number); return new Date(y,m-1,d); };
+  const fmt = d => d.toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"});
+  const daysLeft = s => Math.round((parse(s)-today())/DAY);
+  const level = n => n <= 0 ? "bad" : n <= 2 ? "warn" : "ok";
+  const LABEL = {ok:"🟢 à consommer plus tard", warn:"🟠 à consommer bientôt", bad:"🔴 à consommer rapidement"};
+
+  // Stockage local (par téléphone)
+  const KEY = "freshbox-items-v1";
+  function load(){ try { return JSON.parse(localStorage.getItem(KEY)) || null; } catch(e){ return null; } }
+  function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+  const t = today();
+  const ex = (box,name,off) => ({id:"ex"+box, box, name, date: iso(new Date(t.getTime()+off*DAY)), example:true});
+  let state = load() || { items:[ex(3,"Reste de gratin",0), ex(2,"Carottes râpées",2), ex(5,"Comté entamé",12)], eaten:0, thrown:0 };
+
+  // Numéro de boîte depuis le QR code : lien …#boite3
+  const m = (location.hash||"").match(/boite(\d{1,2})/i);
+  const boxSel = $("box");
+  for (let i=1;i<=12;i++){ const o=document.createElement("option"); o.value=i; o.textContent="Boîte n°"+i; boxSel.appendChild(o); }
+  if (m) boxSel.value = m[1];
+  const syncTag = () => $("boxTag").textContent = "Boîte n°"+boxSel.value;
+  boxSel.addEventListener("change", syncTag); syncTag();
+
+  const catSel = $("cat");
+  CATS.forEach(([k,l,d]) => { const o=document.createElement("option"); o.value=k; o.textContent=l+" · ~"+d+" j"; catSel.appendChild(o); });
+  const estDate = () => { const c = CATS.find(x=>x[0]===catSel.value); return new Date(t.getTime()+c[2]*DAY); };
+  const showEst = () => { $("estimate").textContent = "Date estimée : " + fmt(estDate()) + ". C'est une estimation moyenne de conservation au frigo."; };
+  catSel.addEventListener("change", showEst); showEst();
+
+  $("date").min = iso(t);
+  $("date").value = iso(new Date(t.getTime()+3*DAY));
+
+  let mode = "date";
+  function setMode(v){
+    mode = v;
+    $("modeDate").setAttribute("aria-pressed", v==="date");
+    $("modeCat").setAttribute("aria-pressed", v==="cat");
+    $("dateBlock").hidden = v!=="date";
+    $("catBlock").hidden = v!=="cat";
+  }
+  $("modeDate").onclick = () => setMode("date");
+  $("modeCat").onclick = () => setMode("cat");
+
+  function calLink(title, day, details){
+    const d = iso(day).replace(/-/g,"");
+    const q = new URLSearchParams({action:"TEMPLATE", text:title, dates:d+"T180000/"+d+"T181500", ctz:"Europe/Paris", details});
+    return "https://calendar.google.com/calendar/render?"+q.toString();
+  }
+
+  const validContact = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || /^\+?[\d\s.-]{9,}$/.test(v);
+
+  $("form").addEventListener("submit", e => {
+    e.preventDefault();
+    const name = $("product").value.trim();
+    const contact = $("contact").value.trim();
+    let ok = true;
+    $("errProduct").hidden = !!name; if(!name) ok=false;
+    const dStr = mode==="date" ? $("date").value : iso(estDate());
+    $("errDate").hidden = !!dStr; if(!dStr) ok=false;
+    const cOk = validContact(contact);
+    $("errContact").hidden = cOk; if(!cOk) ok=false;
+    if(!ok) return;
+
+    const box = boxSel.value;
+    state.items = state.items.filter(i => !i.example && String(i.box)!==box);
+    state.items.push({id:Date.now().toString(36), box:Number(box), name, date:dStr, estimated: mode==="cat", contact});
+    save();
+    if (WEBHOOK_URL) {
+      fetch(WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({boite:Number(box), produit:name, date_peremption:dStr, date_estimee: mode==="cat",
+          contact, rappel_j2:$("r2").checked, rappel_j1:$("r1").checked, rappel_j0:$("r0").checked, saisi_le:new Date().toISOString()})
+      }).catch(()=>{});
+    }
+
+    const exp = parse(dStr), n = daysLeft(dStr), lv = level(n);
+    $("cLed").className = "led pulse "+lv;
+    $("cTitle").textContent = name + " · Boîte n°"+box;
+    $("cSub").textContent = (mode==="cat" ? "Date estimée : " : "À consommer avant le ") + fmt(exp) + " · " + LABEL[lv];
+    const ul = $("cSched"); ul.innerHTML = "";
+    const rem = [["r2",2,"🟠","à consommer bientôt"],["r1",1,"🟠","à consommer demain"],["r0",0,"🔴","à consommer aujourd'hui"]];
+    let count = 0;
+    rem.forEach(([id,off,ic,txt]) => {
+      if(!$(id).checked) return;
+      const day = new Date(exp.getTime()-off*DAY);
+      if(day < t) return;
+      count++;
+      const title = ic+" FreshBox : "+name+" (boîte n°"+box+") "+txt;
+      const li = document.createElement("li");
+      const w = document.createElement("span"); w.className="when"; w.textContent = fmt(day)+", 18 h";
+      const msg = document.createElement("span"); msg.className="msg"; msg.textContent = ic+" "+name+" "+txt;
+      const a = document.createElement("a"); a.href = calLink(title, day, "Rappel FreshBox. Pense à manger "+name+" (boîte n°"+box+")."); a.target="_blank"; a.rel="noopener"; a.textContent="+ Agenda";
+      li.append(w,msg,a); ul.appendChild(li);
+    });
+    if(!count){ const li=document.createElement("li"); li.innerHTML='<span class="msg">La date est trop proche pour programmer un rappel : mange-le vite.</span>'; ul.appendChild(li); }
+
+    $("form").hidden = true; $("confirm").hidden = false;
+    render();
+    $("confirm").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+
+  $("again").onclick = () => {
+    $("product").value = ""; $("confirm").hidden = true; $("form").hidden = false; $("product").focus();
+  };
+
+  function render(){
+    const list = $("list"); list.innerHTML = "";
+    const items = [...state.items].sort((a,b)=>a.date.localeCompare(b.date));
+    if(!items.length){ list.innerHTML = '<p class="stats">Aucune boîte suivie pour l\'instant.</p>'; }
+    items.forEach(it => {
+      const n = daysLeft(it.date), lv = level(n);
+      const el = document.createElement("div"); el.className = "item "+lv;
+      const led = document.createElement("span"); led.className = "led "+lv+(lv==="bad"?" pulse":"");
+      const nm = document.createElement("div"); nm.className="name"; nm.textContent = it.name;
+      if(it.example){ const tg=document.createElement("span"); tg.className="tag"; tg.textContent="exemple"; nm.appendChild(tg); }
+      const dy = document.createElement("div"); dy.className="days";
+      dy.textContent = n<0 ? "dépassé" : n===0 ? "aujourd'hui" : n===1 ? "demain" : "J-"+n;
+      const meta = document.createElement("div"); meta.className="meta";
+      meta.textContent = "Boîte n°"+it.box+" · "+(it.estimated?"estimé au ":"DLC ")+fmt(parse(it.date));
+      el.append(led,nm,dy,meta);
+      if(!it.example){
+        const acts = document.createElement("div"); acts.className="acts";
+        const b1=document.createElement("button"); b1.type="button"; b1.textContent="✓ Mangé";
+        const b2=document.createElement("button"); b2.type="button"; b2.textContent="Jeté";
+        b1.onclick=()=>done(it.id,"eaten"); b2.onclick=()=>done(it.id,"thrown");
+        acts.append(b1,b2); el.appendChild(acts);
+      }
+      list.appendChild(el);
+    });
+    const tot = state.eaten + state.thrown;
+    $("stats").textContent = tot ? state.eaten+" mangé"+(state.eaten>1?"s":"")+" · "+state.thrown+" jeté"+(state.thrown>1?"s":"") : "";
+  }
+  function done(id,k){
+    const it = state.items.find(i=>i.id===id);
+    state.items = state.items.filter(i=>i.id!==id); state[k]++; save(); render();
+    if (WEBHOOK_URL && it) {
+      fetch(WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({evenement: k==="eaten"?"mange":"jete", boite:it.box, produit:it.name, contact:it.contact||"", saisi_le:new Date().toISOString()})
+      }).catch(()=>{});
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
