@@ -136,9 +136,9 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     </div>
 
     <div>
-      <label for="contact">E-mail ou numéro de téléphone</label>
-      <input type="text" id="contact" placeholder="prenom@mail.fr ou 06 12 34 56 78" autocomplete="email">
-      <p class="err" id="errContact" hidden>Indique un e-mail ou un numéro de téléphone valide.</p>
+      <label for="contact">Ton e-mail <span class="hint">(pour recevoir les rappels)</span></label>
+      <input type="email" id="contact" placeholder="prenom@mail.fr" autocomplete="email" inputmode="email">
+      <p class="err" id="errContact" hidden>Indique une adresse e-mail valide.</p>
     </div>
 
     <div>
@@ -162,7 +162,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
       </div>
     </div>
     <ul class="sched" id="cSched"></ul>
-    <p class="stats">Ajoute chaque rappel à ton agenda pour recevoir la notification sur ton téléphone.</p>
+    <p class="stats" id="cNote">Ajoute chaque rappel à ton agenda pour recevoir la notification sur ton téléphone.</p>
     <div class="row">
       <button class="btn ghost" type="button" id="again">Ajouter un autre aliment</button>
     </div>
@@ -187,8 +187,8 @@ footer{font-size:12px;color:var(--muted);text-align:center}
 <script>
 (function(){
   // ===== RÉGLAGE =====
-  // Colle ici l'adresse du webhook Make (ou Zapier) pour recevoir chaque saisie
-  // dans Google Sheets et programmer les e-mails. Laisse vide pour ne rien envoyer.
+  // Colle ici l'adresse de l'application Web Google Apps Script (se termine par /exec)
+  // pour enregistrer chaque saisie dans Google Sheets et envoyer les rappels par e-mail.
   const WEBHOOK_URL = "";
   // ===================
   // Durées moyennes de conservation au réfrigérateur (après ouverture ou cuisson), en jours
@@ -257,7 +257,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     return "https://calendar.google.com/calendar/render?"+q.toString();
   }
 
-  const validContact = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || /^\+?[\d\s.-]{9,}$/.test(v);
+  const validContact = v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
 
   $("form").addEventListener("submit", e => {
     e.preventDefault();
@@ -276,7 +276,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     state.items.push({id:Date.now().toString(36), box:Number(box), name, date:dStr, estimated: mode==="cat", contact});
     save();
     if (WEBHOOK_URL) {
-      fetch(WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"},
+      fetch(WEBHOOK_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"},
         body: JSON.stringify({boite:Number(box), produit:name, date_peremption:dStr, date_estimee: mode==="cat",
           contact, rappel_j2:$("r2").checked, rappel_j1:$("r1").checked, rappel_j0:$("r0").checked, saisi_le:new Date().toISOString()})
       }).catch(()=>{});
@@ -303,6 +303,9 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     });
     if(!count){ const li=document.createElement("li"); li.innerHTML='<span class="msg">La date est trop proche pour programmer un rappel : mange-le vite.</span>'; ul.appendChild(li); }
 
+    $("cNote").textContent = WEBHOOK_URL
+      ? "Un e-mail de confirmation arrive dans ta boîte mail (pense à regarder les spams). Les rappels te seront envoyés par e-mail vers 9 h. Tu peux aussi les ajouter à ton agenda."
+      : "Ajoute chaque rappel à ton agenda pour recevoir la notification sur ton téléphone.";
     $("form").hidden = true; $("confirm").hidden = false;
     render();
     $("confirm").scrollIntoView({behavior:"smooth",block:"start"});
@@ -343,7 +346,7 @@ footer{font-size:12px;color:var(--muted);text-align:center}
     const it = state.items.find(i=>i.id===id);
     state.items = state.items.filter(i=>i.id!==id); state[k]++; save(); render();
     if (WEBHOOK_URL && it) {
-      fetch(WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"},
+      fetch(WEBHOOK_URL, {method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"},
         body: JSON.stringify({evenement: k==="eaten"?"mange":"jete", boite:it.box, produit:it.name, contact:it.contact||"", saisi_le:new Date().toISOString()})
       }).catch(()=>{});
     }
