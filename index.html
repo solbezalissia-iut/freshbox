@@ -37,7 +37,7 @@ button,input,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 
 /* ---------- En-tête ---------- */
-.hero{background:var(--bg-deep);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px 70px;position:relative;overflow:hidden}
+.hero{background:var(--bg-deep);color:#fff;padding:calc(env(safe-area-inset-top,0px) + 22px) 16px 64px;position:relative;overflow:hidden}
 .hero::after{content:"";position:absolute;inset:auto -10% -60px -10%;height:120px;background:var(--bg);border-radius:50% 50% 0 0}
 .hero-in{max-width:520px;margin:0 auto;position:relative;z-index:1;display:flex;flex-direction:column;gap:18px}
 .brand{display:flex;align-items:center;justify-content:space-between}
@@ -58,12 +58,22 @@ button,input,select{font:inherit;color:inherit}
 .tub.bad .dot{background:var(--bad);box-shadow:0 0 10px var(--bad)}
 
 /* ---------- Contenu ---------- */
-main{max-width:520px;margin:-44px auto 0;padding-inline:16px;padding-block:0 48px;position:relative;z-index:2;display:flex;flex-direction:column;gap:18px}
+main{max-width:520px;margin:6px auto 0;padding-inline:16px;padding-block:0 48px;position:relative;z-index:2;display:flex;flex-direction:column;gap:18px}
 .card{background:var(--paper);border-radius:24px;padding:22px 20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:22px}
 .step{display:flex;flex-direction:column;gap:12px}
 .step-h{display:flex;align-items:center;gap:10px}
 .num{width:28px;height:28px;border-radius:50%;background:var(--mint);color:var(--leaf);font-family:var(--display);font-weight:700;display:grid;place-items:center;font-size:15px;flex:none}
 .step-h h2{font-family:var(--display);font-weight:600;font-size:19px;margin:0}
+.boxrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--paper-2);border-radius:16px;padding:10px 12px 10px 16px}
+.boxrow label{font-weight:800}
+.boxrow select{width:auto;min-height:44px;padding:8px 36px 8px 14px;font-weight:800;font-family:var(--display);font-size:17px;background:var(--paper);appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--leaf) 50%),linear-gradient(135deg,var(--leaf) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 12px) 50%;background-size:6px 6px;background-repeat:no-repeat}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--paper-2);border:2px solid var(--line);border-radius:16px;padding:4px}
+.seg button{border:0;border-radius:11px;background:transparent;padding:10px 6px;font-weight:800;font-size:14px;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--leaf);color:#fff}
+@media (prefers-color-scheme:dark){ .seg button[aria-pressed=true]{color:#07261B} }
+.datepick{display:flex;align-items:center;gap:10px}
+.datepick label{font-size:14px;font-weight:700;color:var(--muted);white-space:nowrap}
+.datepick input{flex:1;min-width:0}
 .sep{height:1px;background:var(--line);border:0;margin:0}
 
 input[type=text],input[type=email],input[type=date],select{width:100%;background:var(--paper-2);border:2px solid var(--line);border-radius:14px;padding:12px 14px;min-height:50px;font-size:16px;transition:border-color .15s}
@@ -165,6 +175,11 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding-inline:16px}
 
 <main>
   <form class="card" id="form" novalidate>
+    <div class="boxrow">
+      <label for="boxSel">📦 Numéro de la boîte</label>
+      <select id="boxSel"></select>
+    </div>
+
     <!-- 1. Quoi -->
     <section class="step">
       <div class="step-h"><span class="num">1</span><h2><label for="product">C'est quoi&nbsp;?</label></h2></div>
@@ -178,11 +193,21 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding-inline:16px}
     <!-- 2. Quand -->
     <section class="step">
       <div class="step-h"><span class="num">2</span><h2 id="whenLabel">À manger avant quand&nbsp;?</h2></div>
-      <div class="chips" id="whenChips" role="group" aria-labelledby="whenLabel"></div>
-      <input type="date" id="date" aria-label="Date limite" hidden>
-      <div id="catBlock" hidden>
-        <label class="small" for="cat" style="display:block;margin-bottom:6px">Pas de date sur l'emballage&nbsp;? Choisis le type d'aliment, on estime pour toi.</label>
-        <select id="cat"></select>
+      <div class="seg" role="group" aria-labelledby="whenLabel">
+        <button type="button" id="kDate" aria-pressed="true">📅 Je connais la date</button>
+        <button type="button" id="kCat" aria-pressed="false">🤷 Je ne la connais pas</button>
+      </div>
+      <div id="knownBlock" class="step" style="gap:12px">
+      <div class="chips" id="whenChips" aria-label="Choix rapides de date"></div>
+      <div class="datepick" id="datePick">
+        <label for="date">ou la date exacte&nbsp;:</label>
+        <input type="date" id="date">
+      </div>
+      </div>
+      <div id="catBlock" class="step" style="gap:10px" hidden>
+        <p class="small">Pas de date sur l'emballage ou c'est un reste&nbsp;? Choisis le type d'aliment, on estime pour toi.</p>
+        <div class="chips" id="catChips"></div>
+        <select id="cat" hidden aria-hidden="true"></select>
       </div>
       <div class="estimate" id="whenSum"><span id="whenText"></span></div>
       <p class="err" id="errDate" hidden>Choisis une date.</p>
@@ -265,9 +290,15 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding-inline:16px}
 
   // Numéro de boîte (lien du QR code …#boite3)
   const m = (location.hash||"").match(/boite(\d{1,2})/i);
-  const box = m ? Number(m[1]) : 1;
-  $("boxPill").textContent = "Boîte n°"+box;
-  $("helloTitle").textContent = "Qu'est-ce qu'on range dans la boîte n°"+box+" ?";
+  let box = m ? Number(m[1]) : 1;
+  for(let i=1;i<=20;i++){ const o=document.createElement("option"); o.value=i; o.textContent="n°"+i; $("boxSel").appendChild(o); }
+  $("boxSel").value = box;
+  function setBox(){
+    box = Number($("boxSel").value);
+    $("boxPill").textContent = "Boîte n°"+box;
+    $("helloTitle").textContent = "Qu'est-ce qu'on range dans la boîte n°"+box+" ?";
+  }
+  $("boxSel").addEventListener("change", setBox); setBox();
 
   // --- Étape 1 : choix rapides
   let chosenCat = null;
@@ -286,17 +317,34 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding-inline:16px}
 
   // --- Étape 2 : quand
   CATS.forEach(([k,l,d]) => { const o=document.createElement("option"); o.value=k; o.textContent=l+" (~"+d+" j)"; $("cat").appendChild(o); });
-  const WHEN = [["1","Demain",1],["2","Dans 2 jours",2],["3","Dans 3 jours",3],["5","Dans 5 jours",5],["7","Dans 1 semaine",7],["date","📅 Autre date"],["cat","🤷 Pas de date"]];
+  const WHEN = [["1","Demain",1],["2","Dans 2 jours",2],["3","Dans 3 jours",3],["5","Dans 5 jours",5],["7","Dans 1 semaine",7]];
   let whenMode = "3";
   WHEN.forEach(([k,l]) => {
     const b=document.createElement("button"); b.type="button"; b.className="chip"; b.dataset.k=k; b.textContent=l;
     b.setAttribute("aria-pressed", k===whenMode ? "true":"false");
-    b.onclick = () => { whenMode=k; document.querySelectorAll("#whenChips .chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.k===k?"true":"false")); refreshWhen(); if(k==="date") $("date").focus(); };
+    b.onclick = () => { whenMode=k; document.querySelectorAll("#whenChips .chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.k===k?"true":"false")); refreshWhen(); };
     $("whenChips").appendChild(b);
   });
-  $("date").min = iso(T); $("date").value = iso(plus(4));
-  $("date").addEventListener("input", refreshWhen);
+  $("date").min = iso(T);
+  $("date").addEventListener("input", () => {
+    whenMode = "date";
+    document.querySelectorAll("#whenChips .chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+    refreshWhen();
+  });
   $("cat").addEventListener("change", refreshWhen);
+  let lastKnown = "3";
+  CATS.forEach(([k,l,d]) => {
+    const b=document.createElement("button"); b.type="button"; b.className="chip"; b.dataset.k=k;
+    b.innerHTML = l+' <span class="d">~'+d+' j</span>';
+    b.onclick = () => { $("cat").value=k; refreshWhen(); };
+    $("catChips").appendChild(b);
+  });
+  $("kDate").onclick = () => {
+    whenMode = lastKnown;
+    document.querySelectorAll("#whenChips .chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.k===whenMode?"true":"false"));
+    refreshWhen();
+  };
+  $("kCat").onclick = () => { if(whenMode!=="cat") lastKnown = whenMode; whenMode="cat"; refreshWhen(); };
 
   function chosenDate(){
     if(whenMode==="date") return $("date").value || "";
@@ -304,9 +352,14 @@ footer{text-align:center;font-size:12px;color:var(--muted);padding-inline:16px}
     return iso(plus(Number(whenMode)));
   }
   function refreshWhen(){
-    $("date").hidden = whenMode!=="date";
-    $("catBlock").hidden = whenMode!=="cat";
+    const isCat = whenMode==="cat";
+    $("catBlock").hidden = !isCat;
+    $("knownBlock").hidden = isCat;
+    $("kDate").setAttribute("aria-pressed", !isCat);
+    $("kCat").setAttribute("aria-pressed", isCat);
+    document.querySelectorAll("#catChips .chip").forEach(x=>x.setAttribute("aria-pressed", x.dataset.k===$("cat").value?"true":"false"));
     const s = chosenDate();
+    if(s && whenMode!=="date") $("date").value = s;
     $("whenSum").hidden = !s;
     if(s){
       const lv = level(left(s));
